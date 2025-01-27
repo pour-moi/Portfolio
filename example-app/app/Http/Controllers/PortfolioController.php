@@ -37,7 +37,13 @@ class PortfolioController extends Controller
         return redirect()->route('portfolio.index')->with('success', 'Portfolio item created successfully!');
     }
 
-    public function create(Request $request){
-        return response("create method");
+    public function read(Request $request){
+
+        $portfolio = Portfolio::all();
+
+        return Inertia::render('AdminPage',[
+            'portfolio' => $portfolio
+        ]);
+        
     }
 }
