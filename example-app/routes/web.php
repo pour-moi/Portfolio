@@ -16,14 +16,6 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get("/homepage", function(){
-
-    $portfolios = Portfolio::all();
-
-    return Inertia::render("HomePage" ,[
-        'portfolios' => $portfolios,
-    ]);
-});
 
 Route::get("/admin", function(){
     return Inertia::render("AdminPage");
