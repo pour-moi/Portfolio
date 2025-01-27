@@ -46,4 +46,11 @@ class PortfolioController extends Controller
         ]);
         
     }
+
+    public function destroy(Portfolio $portfolio){
+    $portfolio->delete();
+
+    return redirect()->route('portfolio.index')->with('success', 'Portfolio item deleted successfully!');
+}
+
 }
