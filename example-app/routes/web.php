@@ -34,6 +34,8 @@ Route::middleware('auth')->group(function () {
 Route::get('/admin/portfolio/read', [PortfolioController::class, 'read']);
 Route::post('/admin/portfolio/store', [PortfolioController::class, 'store'])->name('portfolio.store');
 
-Route::resource('portfolio', PortfolioController::class);
+Route::resource('portfolio', PortfolioController::class)
+    ->only(['index', 'store', 'destroy'])
+;
 
 require __DIR__.'/auth.php';
