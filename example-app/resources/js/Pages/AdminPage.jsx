@@ -1,4 +1,5 @@
 import { useForm } from "@inertiajs/react";
+import { router } from "@inertiajs/react";
 
 export default function AdminPage({ portfolio }) {
     const { data, setData, post } = useForm({
@@ -12,10 +13,14 @@ export default function AdminPage({ portfolio }) {
         post("/admin/portfolio/store");
     };
 
+    const handleDelete = (id) => {
+        router.delete(`/portfolio/${id}`);
+    };
+
     return (
         <>
             <div class="bg-white p-8 overflow-auto mt-16 h-full">
-                <h2 class="text-2xl mb-4">Classes List</h2>
+                <h2 class="text-2xl mb-4">Projects</h2>
 
                 <div class="relative overflow-auto">
                     <div class="overflow-x-auto rounded-lg">
@@ -63,7 +68,15 @@ export default function AdminPage({ portfolio }) {
                                                     Edit
                                                 </button>
                                                 <button class="bg-red-500 text-white px-3 py-1 rounded-md text-xs md:text-sm">
-                                                    Delete
+                                                    <a
+                                                        onClick={() =>
+                                                            handleDelete(
+                                                                portfolio.id
+                                                            )
+                                                        }
+                                                    >
+                                                        Delete
+                                                    </a>
                                                 </button>
                                             </td>
                                         </tr>
