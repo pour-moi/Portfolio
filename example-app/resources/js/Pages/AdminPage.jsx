@@ -1,93 +1,115 @@
 import { useForm } from "@inertiajs/react";
 import { router } from "@inertiajs/react";
+import { useState } from "react"; // Import useState for managing edit state
 
 export default function AdminPage({ portfolio }) {
-    const { data, setData, post } = useForm({
+    const { data, setData, post, put } = useForm({
         title: "",
         description: "",
         image: null,
     });
 
+    const [editingPortfolio, setEditingPortfolio] = useState(null);
+
     const submit = (e) => {
         e.preventDefault();
-        post("/admin/portfolio/store");
+        if (editingPortfolio) {
+            put(`/portfolio/${editingPortfolio.id}`);
+        } else {
+            post("/admin/portfolio/store");
+        }
     };
 
     const handleDelete = (id) => {
         router.delete(`/portfolio/${id}`);
     };
 
+    const handleEdit = (portfolio) => {
+        setData({
+            title: portfolio.title,
+            description: portfolio.description,
+            image: null,
+        });
+        setEditingPortfolio(portfolio);
+    };
+
     return (
         <>
-            <div class="bg-white p-8 overflow-auto mt-16 h-full">
-                <h2 class="text-2xl mb-4">Projects</h2>
+            <div className="bg-white p-8 overflow-auto mt-16 h-full">
+                <h2 className="text-2xl mb-4">Projects</h2>
 
-                <div class="relative overflow-auto">
-                    <div class="overflow-x-auto rounded-lg">
-                        <table class="min-w-full bg-white border mb-20">
+                <div className="relative overflow-auto">
+                    <div className="overflow-x-auto rounded-lg">
+                        <table className="min-w-full bg-white border mb-20">
                             <thead>
-                                <tr class="bg-[#2B4DC994] text-center text-xs md:text-sm font-thin text-white">
-                                    <th class="p-0">
-                                        <span class="block py-2 px-3 border-r border-gray-300">
+                                <tr className="bg-[#2B4DC994] text-center text-xs md:text-sm font-thin text-white">
+                                    <th className="p-0">
+                                        <span className="block py-2 px-3 border-r border-gray-300">
                                             No
                                         </span>
                                     </th>
-                                    <th class="p-0">
-                                        <span class="block py-2 px-3 border-r border-gray-300">
+                                    <th className="p-0">
+                                        <span className="block py-2 px-3 border-r border-gray-300">
                                             Project Title
                                         </span>
                                     </th>
-                                    <th class="p-0">
-                                        <span class="block py-2 px-3 border-r border-gray-300">
+                                    <th className="p-0">
+                                        <span className="block py-2 px-3 border-r border-gray-300">
                                             Description
                                         </span>
                                     </th>
-                                    <th class="p-4 text-xs md:text-sm">
+                                    <th className="p-4 text-xs md:text-sm">
                                         Actions
                                     </th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {portfolio.map((portfolio) => {
-                                    return (
-                                        <tr class="border-b text-xs md:text-sm text-center text-gray-800">
-                                            <td class="p-2 md:p-4">
-                                                {portfolio.id}
-                                            </td>
-                                            <td class="p-2 md:p-4">
-                                                {portfolio.title}
-                                            </td>
-                                            <td class="p-2 md:p-4">
-                                                {portfolio.description.substring(
-                                                    0,
-                                                    100
-                                                ) + "..."}
-                                            </td>
-                                            <td class="relative p-2 md:p-4 flex justify-center space-x-2">
-                                                <button class="bg-blue-500 text-white px-3 py-1 rounded-md text-xs md:text-sm">
-                                                    Edit
-                                                </button>
-                                                <button class="bg-red-500 text-white px-3 py-1 rounded-md text-xs md:text-sm">
-                                                    <a
-                                                        onClick={() =>
-                                                            handleDelete(
-                                                                portfolio.id
-                                                            )
-                                                        }
-                                                    >
-                                                        Delete
-                                                    </a>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
+                                {portfolio.map((portfolio) => (
+                                    <tr
+                                        key={portfolio.id}
+                                        className="border-b text-xs md:text-sm text-center text-gray-800"
+                                    >
+                                        <td className="p-2 md:p-4">
+                                            {portfolio.id}
+                                        </td>
+                                        <td className="p-2 md:p-4">
+                                            {portfolio.title}
+                                        </td>
+                                        <td className="p-2 md:p-4">
+                                            {portfolio.description.substring(
+                                                0,
+                                                100
+                                            ) + "..."}
+                                        </td>
+                                        <td className="relative p-2 md:p-4 flex justify-center space-x-2">
+                                            <button
+                                                className="bg-blue-500 text-white px-3 py-1 rounded-md text-xs md:text-sm"
+                                                onClick={() =>
+                                                    handleEdit(portfolio)
+                                                }
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                className="bg-red-500 text-white px-3 py-1 rounded-md text-xs md:text-sm"
+                                                onClick={() =>
+                                                    handleDelete(portfolio.id)
+                                                }
+                                            >
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
-            <h1 className="text-center">Create Portfolio</h1>
+
+            <h1 className="text-center">
+                {editingPortfolio ? "Edit Portfolio" : "Create Portfolio"}
+            </h1>
             <form
                 onSubmit={submit}
                 className="flex justify-center m-auto flex-col align-center w-80 mb-16"
@@ -121,9 +143,9 @@ export default function AdminPage({ portfolio }) {
 
                 <button
                     type="submit"
-                    class="bg-blue-500 text-white px-3 py-1 rounded-md mt-4"
+                    className="bg-blue-500 text-white px-3 py-1 rounded-md mt-4"
                 >
-                    Submit
+                    {editingPortfolio ? "Update" : "Submit"}
                 </button>
             </form>
         </>
