@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Inertia\Inertia;
 use App\Models\Portfolio;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response; 
+use Illuminate\Http\Response;
 
 class PortfolioController extends Controller
 {
@@ -37,20 +37,40 @@ class PortfolioController extends Controller
         return redirect()->route('portfolio.index')->with('success', 'Portfolio item created successfully!');
     }
 
-    public function read(Request $request){
-
+    public function read(Request $request)
+    {
         $portfolio = Portfolio::all();
 
-        return Inertia::render('AdminPage',[
+        return Inertia::render('AdminPage', [
             'portfolio' => $portfolio
         ]);
-        
     }
 
-    public function destroy(Portfolio $portfolio){
-    $portfolio->delete();
+    public function destroy(Portfolio $portfolio)
+    {
+        $portfolio->delete();
 
-    return redirect()->route('portfolio.index')->with('success', 'Portfolio item deleted successfully!');
-}
+        return redirect()->route('portfolio.index')->with('success', 'Portfolio item deleted successfully!');
+    }
 
+    public function update(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        $portfolio = Portfolio::findOrFail($id);
+
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('images', 'public');
+            $imageUrl = asset('storage/' . $imagePath);
+            $validated['image'] = $imageUrl;
+        }
+
+        $portfolio->update($validated);
+
+        return redirect()->route('portfolio.index')->with('success', 'Portfolio item updated successfully!');
+    }
 }
